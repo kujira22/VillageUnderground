@@ -1,4 +1,5 @@
 import { initBarba } from "./modules/barba.js";
+import { initShots } from "./modules/shots.js";
 import { initThreeScene } from "./modules/three-scene.js";
 import { domReady } from "./utils/dom-ready.js";
 
@@ -28,11 +29,12 @@ async function boot() {
   });
 }
 
-function runPageSetup({ namespace }) {
+function runPageSetup({ container, namespace }) {
   document.body.dataset.page = namespace;
   app.three?.setNamespace(namespace);
+  initShots(container);
 
-  pageHooks[namespace]?.({ namespace });
+  pageHooks[namespace]?.({ container, namespace });
 }
 
 boot();
