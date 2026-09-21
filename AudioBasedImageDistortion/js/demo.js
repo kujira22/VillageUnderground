@@ -3,7 +3,7 @@ const sketch = (p) => {
 	const designHeight = 1125;
 	const canvasFontFamily = 'GararaCanvas';
 	const spiralText = 'Alewya, Ady Suleiman, Batu, Bushbaby, Channel One Sound System, Conducta, Crawlers, Distruction Boyz, Ella Knight, Faster Horses, Ghostly Kisses, girli, Grace Cummings, Honestav, Jembaa Groove, Kraak & Smaak, Lido Pimienta, MF Robots, MGNA Crrrta, Naomi Scott, Nick Hakim, Pigeon, PlayPiem, Riria, Romare, Skream, Stone Foundation, Thaiboy Digital, TWOFACED, Young Marco';
-	const defaultTrackName = 'Brother-Music-Typhoon.mp3';
+	const defaultTrackName = '01VirginiaPlain.mp3';
 	const defaultTrackPath = `audio/${defaultTrackName}`;
 	const backingVersions = {
 		purple: {
@@ -140,7 +140,7 @@ const sketch = (p) => {
 	let isMuted = false;
 	let volumeLevel = 1;
 	let effectMultiplier = 5.0;
-	let audioThreshold = 0.75;
+	let audioThreshold = 0.55;
 	let noiseScale = 2.4;
 	let pathSpeed = -0.01;
 	let pathWindow = 0.5;
