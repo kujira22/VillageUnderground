@@ -37,25 +37,8 @@ function webflowCleanUrls() {
   };
 }
 
-function injectLocalBaseScript() {
-  const script = '<script type="module" src="/src/base.js"></script>';
-
-  return {
-    name: "inject-local-base-script",
-    transformIndexHtml(html) {
-      let nextHtml = html;
-
-      if (!nextHtml.includes('src="/src/base.js"')) {
-        nextHtml = nextHtml.replace("</body>", `  ${script}\n</body>`);
-      }
-
-      return nextHtml;
-    },
-  };
-}
-
 export default defineConfig({
-  plugins: [webflowCleanUrls(), injectLocalBaseScript()],
+  plugins: [webflowCleanUrls()],
   publicDir: false,
   build: {
     emptyOutDir: true,

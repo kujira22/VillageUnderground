@@ -1,88 +1,44 @@
-# Webflow Three Barba Starter
+# Village Underground base
 
-Minimal Vite starter for Webflow builds that need a bundled JavaScript layer with Three.js and Barba.js.
+Two Webflow pages (`index.html` and `about.html`) with a shared Three.js canvas, Barba transitions, loading indicators, split-text animation, and animated link underlines.
 
-## Scripts
-
-```bash
+```sh
 npm install
 npm run dev
 npm run build
 ```
 
-`npm run build` outputs a single Webflow-friendly bundle at:
+The development server serves `/` and `/about`. The build produces `public/base.js` and its source map. This is a JavaScript library build; `npm run preview` serves the bundle, not the HTML pages.
 
-```text
-dist/base.js
-```
+## Webflow structure
 
-## Webflow Usage
-
-Keep the HTML and CSS in Webflow. Add the bundle before the closing `</body>` tag:
+Keep the single canvas outside the page container so its renderer and model persist during navigation:
 
 ```html
-<script src="https://your-cdn-or-host/base.js"></script>
+<body data-barba="wrapper">
+  <div data-three-canvas class="webgl"></div>
+  <section data-barba="container" data-barba-namespace="home">
+    <a href="/about" data-underline-link>About</a>
+    <h1>Home</h1>
+  </section>
+</body>
 ```
 
-For Barba, Webflow pages need this shape:
+Webflow owns the layout and canvas dimensions. Each page needs the same wrapper/canvas structure and a unique namespace. The local HTML loads `/src/base.js`; in Webflow, load the hosted `base.js` once after GSAP, SplitText, ScrollTrigger, and Lenis. The base owns the Lenis instance and animation loop.
 
-```html
-<div data-barba="wrapper">
-  <main data-barba="container" data-barba-namespace="home">
-    ...
-  </main>
-</div>
-```
+## Model setup
 
-For the Three.js canvas, add a mount element anywhere on the page:
+The default is neutral placeholder geometry, with no project-specific model request. Add `data-three-model="https://your-host/model.glb"` to the canvas mount to load a GLB. The initial loader waits for model preparation and fonts; failed model requests fall back to the placeholder.
 
-```html
-<div data-three-canvas></div>
-```
+The model system retains mouse-driven camera movement, first-clip reveal animation, hover/rest/click animation progress, transition out/in animation, and optional black/white depth-mask materials. Other model materials are preserved. Add `data-three-control` to a wrapping element to use it as the hover/click target. An optional `data-three-reveal="#footer-link"` selector can synchronize model reveal with an animated underline; that trigger should also live outside the swapped page container.
 
-Style that element in Webflow. For a fixed fullscreen background canvas, use:
+## Text and links
 
-```css
-[data-three-canvas] {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-}
-```
+- Headings, paragraphs, `[data-text]`, `[data-underline-link]`, and the existing generic typography classes use split-line animation.
+- `data-text-animate="false"` excludes an element and its descendants.
+- `data-underline-link` reveals an underline on hover; `data-underline-link="alt"` starts underlined and removes the underline on hover.
+- `[data-link-hover]` enables optional sibling-link dimming within a navigation group.
+- `[data-year]` is filled with the current year.
+- `base:text-reveal` and `base:underline-reveal` bubble from animated elements for future integrations.
 
-## Shots MVP
-
-For a direct front-end MVP, add config before `base.js`:
-
-```html
-<script>
-  window.ShotsConfig = {
-    baseUrl: "https://alex.slateapp.com/api/v1",
-    accessToken: "SHOTS_ACCESS_TOKEN"
-  };
-</script>
-```
-
-Single work binding:
-
-```html
-<div data-shots-work="221">
-  <h2 data-shots-title></h2>
-  <img data-shots-poster alt="">
-  <video data-shots-video controls playsinline></video>
-</div>
-```
-
-Showreel binding:
-
-```html
-<div data-shots-showreel="33">
-  <article data-shots-template>
-    <h2 data-shots-title></h2>
-    <img data-shots-poster alt="">
-    <video data-shots-video muted loop playsinline data-shots-autoplay></video>
-  </article>
-</div>
-```
-
-Security note: without a backend or edge proxy, the access token is public in Webflow. That is only acceptable if Shots confirms the token is read-only and safe to expose. For production, prefer a cached Cloudflare Worker or static JSON mirror so the browser never receives the token.
+Transitions preserve the incoming rotated rectangle mask, scale and text timing, outgoing text and underlines, delayed loading indicator, font/layout readiness, scroll reset, and animation teardown. The canvas remains mounted across navigation. Shots, project logos, maps, client spinners, mobile navigation, and page-specific media behavior have been removed.

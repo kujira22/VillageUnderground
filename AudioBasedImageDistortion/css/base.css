@@ -1,0 +1,453 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+@font-face {
+	font-family: "Garara";
+	font-style: normal;
+	font-weight: 500;
+	src: url("../fonts/Garara-Medium.woff2") format("woff2");
+}
+
+:root {
+	color: #fff;
+	background: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+
+body {
+	min-width: 320px;
+	min-height: 100vh;
+	margin: 0;
+	overflow: hidden;
+	background: #000;
+}
+
+button {
+	border: 0;
+	border-radius: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+input {
+	font: inherit;
+}
+
+select {
+	border: 1px solid rgb(255 255 255 / 0.26);
+	border-radius: 0;
+	padding: 8px 10px;
+	background: rgb(255 255 255 / 0.1);
+	color: #fff;
+	font: inherit;
+	text-transform: uppercase;
+}
+
+canvas {
+	position: fixed;
+	inset: 0;
+	z-index: 2;
+	display: block;
+	width: 100vw !important;
+	height: 100vh !important;
+	pointer-events: none;
+}
+
+.stage {
+	position: fixed;
+	inset: 0;
+	overflow: hidden;
+	background: #000;
+}
+
+.stage__background {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+	user-select: none;
+}
+
+.gui {
+	position: fixed;
+	top: 24px;
+	right: 24px;
+	z-index: 5;
+	width: min(320px, calc(100vw - 32px));
+	max-height: calc(100vh - 48px);
+	padding: 16px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	background: rgb(10 10 10 / 0.74);
+	border: 1px solid rgb(255 255 255 / 0.22);
+	backdrop-filter: blur(18px);
+	box-shadow: 0 18px 60px rgb(0 0 0 / 0.24);
+	scrollbar-color: #dfff00 rgb(255 255 255 / 0.12);
+	scrollbar-width: thin;
+}
+
+.gui::-webkit-scrollbar {
+	width: 8px;
+}
+
+.gui::-webkit-scrollbar-track {
+	background: rgb(255 255 255 / 0.12);
+}
+
+.gui::-webkit-scrollbar-thumb {
+	background: #dfff00;
+}
+
+.gui__header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 14px;
+}
+
+.gui__eyebrow,
+.gui__title {
+	margin: 0;
+	text-transform: uppercase;
+}
+
+.gui__eyebrow {
+	color: rgb(255 255 255 / 0.56);
+	font-size: 0.72rem;
+	letter-spacing: 0.08em;
+}
+
+.gui__title {
+	color: #fff;
+	font-size: 0.72rem;
+	line-height: 1;
+}
+
+.performance-readout {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 6px;
+	margin: 0 0 14px;
+	color: rgb(255 255 255 / 0.58);
+	font-size: 0.68rem;
+	text-transform: uppercase;
+}
+
+.performance-readout span {
+	padding: 7px 8px;
+	background: rgb(255 255 255 / 0.08);
+}
+
+.performance-readout strong {
+	display: block;
+	margin-top: 3px;
+	color: #dfff00;
+	font-size: 0.72rem;
+	font-weight: 400;
+	text-transform: none;
+}
+
+.backing-switcher {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 6px;
+	margin: 0 0 14px;
+}
+
+.experiment-switcher {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 6px;
+}
+
+.backing-switcher__button,
+.experiment-switcher__button,
+.mute-button {
+	min-height: 44px;
+	padding: 0 12px;
+	background: rgb(255 255 255 / 0.12);
+	color: rgb(255 255 255 / 0.72);
+	text-align: left;
+	text-transform: uppercase;
+	transition:
+		background 160ms ease,
+		color 160ms ease;
+}
+
+.backing-switcher__button {
+	display: grid;
+	place-items: center;
+	font-size: 0.68rem;
+}
+
+.experiment-switcher__button {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 3px;
+}
+
+.experiment-switcher__button span:first-child {
+	color: rgb(255 255 255 / 0.42);
+	font-size: 0.68rem;
+}
+
+.experiment-switcher__button span:last-child {
+	font-size: 0.78rem;
+}
+
+.experiment-switcher__button:hover,
+.experiment-switcher__button:focus-visible,
+.backing-switcher__button:hover,
+.backing-switcher__button:focus-visible,
+.mute-button:hover,
+.mute-button:focus-visible,
+.backing-switcher__button.is-active,
+.experiment-switcher__button.is-active {
+	background: #fff;
+	color: #000;
+	outline: none;
+}
+
+.experiment-switcher__button.is-active span:first-child {
+	color: rgb(0 0 0 / 0.52);
+}
+
+.meters {
+	display: grid;
+	gap: 8px;
+	margin: 16px 0;
+}
+
+.meter {
+	display: grid;
+	grid-template-columns: 56px 1fr;
+	align-items: center;
+	gap: 10px;
+}
+
+.meter__label {
+	color: rgb(255 255 255 / 0.58);
+	font-size: 0.72rem;
+	text-transform: uppercase;
+}
+
+.meter__track {
+	position: relative;
+	height: 8px;
+	overflow: hidden;
+	background: rgb(255 255 255 / 0.12);
+}
+
+.meter__bar {
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 0%;
+	background: #dfff00;
+	transition: width 80ms linear;
+}
+
+.track-readout,
+.volume-control,
+.shader-control {
+	display: grid;
+	gap: 6px;
+	margin-bottom: 14px;
+}
+
+.track-readout__label,
+.volume-control__label,
+.volume-control__value,
+.shader-control__label,
+.shader-control__value {
+	color: rgb(255 255 255 / 0.58);
+	font-size: 0.72rem;
+	text-transform: uppercase;
+}
+
+.track-readout__name {
+	overflow: hidden;
+	padding: 9px 10px;
+	background: rgb(255 255 255 / 0.1);
+	color: #fff;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.gui-section {
+	margin: 0 0 14px;
+	padding: 10px 10px 0;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.055);
+}
+
+.gui-section summary {
+	margin: 0 0 12px;
+	color: rgb(255 255 255 / 0.82);
+	font-size: 0.76rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.volume-control,
+.shader-control {
+	grid-template-columns: 1fr auto;
+	align-items: center;
+}
+
+.volume-control input,
+.shader-control input {
+	grid-column: 1 / -1;
+	width: 100%;
+	height: 18px;
+	margin: 0;
+	accent-color: #dfff00;
+	cursor: pointer;
+}
+
+.shader-control select {
+	grid-column: 1 / -1;
+}
+
+.settings-actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+	margin: 0 0 14px;
+}
+
+.settings-button {
+	display: grid;
+	min-height: 38px;
+	padding: 0 10px;
+	place-items: center;
+	background: rgb(255 255 255 / 0.12);
+	color: rgb(255 255 255 / 0.72);
+	font-size: 0.68rem;
+	text-align: center;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		color 160ms ease;
+}
+
+.settings-button:hover,
+.settings-button:focus-visible {
+	background: #fff;
+	color: #000;
+	outline: none;
+}
+
+.settings-button input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.settings-status {
+	grid-column: 1 / -1;
+	min-height: 1em;
+	margin: 0;
+	color: rgb(255 255 255 / 0.58);
+	font-size: 0.68rem;
+}
+
+.mute-button {
+	width: 100%;
+	min-height: 42px;
+	text-align: center;
+	background: transparent;
+	border: 1px solid rgb(255 255 255 / 0.26);
+}
+
+.mute-button.is-muted {
+	background: #fff;
+	color: #000;
+}
+
+.drop-indicator {
+	position: fixed;
+	inset: 16px;
+	z-index: 10;
+	display: grid;
+	place-items: center;
+	border: 1px solid rgb(223 255 0 / 0.75);
+	background: rgb(0 0 0 / 0.48);
+	color: #dfff00;
+	font-size: 0.86rem;
+	opacity: 0;
+	pointer-events: none;
+	text-transform: uppercase;
+	transition: opacity 160ms ease;
+}
+
+.is-dragging-audio .drop-indicator {
+	opacity: 1;
+}
+
+.p5_loading {
+	position: fixed;
+	inset: 0;
+	z-index: 20;
+	display: grid;
+	place-items: center;
+	background: #000;
+}
+
+.p5_loading__inner {
+	width: 42px;
+	height: 42px;
+	border: 1px solid rgb(255 255 255 / 0.28);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: loader-spin 700ms linear infinite;
+}
+
+@keyframes loader-spin {
+	to {
+		transform: rotate(1turn);
+	}
+}
+
+@media (max-width: 700px) {
+	.gui {
+		top: auto;
+		right: 12px;
+		bottom: 12px;
+		left: 12px;
+		width: auto;
+		padding: 12px;
+	}
+
+	.experiment-switcher {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.experiment-switcher__button {
+		min-height: 38px;
+		padding: 0;
+		text-align: center;
+	}
+
+	.experiment-switcher__button span:last-child,
+	.gui__eyebrow {
+		display: none;
+	}
+
+	.meters {
+		margin: 12px 0;
+	}
+}

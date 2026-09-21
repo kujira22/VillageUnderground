@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Audio Image Workbench</title>
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="stylesheet" href="css/base.css" />
+	</head>
+	<body>
+		<main class="stage" aria-label="Audio image distortion workbench">
+			<img class="stage__background" id="stage-background" src="img/8back.jpg" alt="" />
+
+			<div class="gui" aria-label="Experiment controls">
+				<div class="gui__header">
+					<p class="gui__eyebrow">Village Underground</p>
+					<p class="gui__title">Audioshader <span id="active-experiment-label">4</span></p>
+				</div>
+
+				<div class="performance-readout" aria-label="Performance readout">
+					<span>FPS <strong id="fps-value">--</strong></span>
+					<span>Load <strong id="load-value">--</strong></span>
+					<span>Text <strong id="text-cache-value">--</strong></span>
+				</div>
+
+				<div class="backing-switcher" id="backing-switcher" aria-label="Backing colour version">
+					<button class="backing-switcher__button is-active" type="button" data-backing="purple">Purple</button>
+					<button class="backing-switcher__button" type="button" data-backing="red">Red</button>
+					<button class="backing-switcher__button" type="button" data-backing="blue">Blue</button>
+				</div>
+
+				<div class="experiment-switcher" id="experiment-switcher" aria-label="Shader experiments">
+					<button class="experiment-switcher__button" type="button" data-experiment="1">
+						<span>01</span>
+						<span>Wave X</span>
+					</button>
+					<button class="experiment-switcher__button" type="button" data-experiment="2">
+						<span>02</span>
+						<span>Map Zoom</span>
+					</button>
+					<button class="experiment-switcher__button" type="button" data-experiment="3">
+						<span>03</span>
+						<span>RGB Split</span>
+					</button>
+					<button class="experiment-switcher__button is-active" type="button" data-experiment="4">
+						<span>04</span>
+						<span>Vertical Map</span>
+					</button>
+					<button class="experiment-switcher__button" type="button" data-experiment="5">
+						<span>05</span>
+						<span>Wide Wave</span>
+					</button>
+					<button class="experiment-switcher__button" type="button" data-experiment="6">
+						<span>06</span>
+						<span>Y Wave</span>
+					</button>
+					<button class="experiment-switcher__button" type="button" data-experiment="7">
+						<span>07</span>
+						<span>Soft Split</span>
+					</button>
+					<button class="experiment-switcher__button" type="button" data-experiment="8">
+						<span>08</span>
+						<span>Y Drift</span>
+					</button>
+				</div>
+
+				<div class="meters" aria-hidden="true">
+					<div class="meter">
+						<span class="meter__label">Bass</span>
+						<span class="meter__track"><span class="meter__bar" data-meter="bass"></span></span>
+					</div>
+					<div class="meter">
+						<span class="meter__label">Mid</span>
+						<span class="meter__track"><span class="meter__bar" data-meter="mid"></span></span>
+					</div>
+					<div class="meter">
+						<span class="meter__label">Treble</span>
+						<span class="meter__track"><span class="meter__bar" data-meter="treble"></span></span>
+					</div>
+				</div>
+
+				<div class="track-readout">
+					<span class="track-readout__label">Track</span>
+					<span class="track-readout__name" id="track-name">Brother-Music-Typhoon.mp3</span>
+				</div>
+
+				<label class="volume-control" for="volume-slider">
+					<span class="volume-control__label">Volume / Amount</span>
+					<span class="volume-control__value" id="volume-value">100%</span>
+					<input id="volume-slider" type="range" min="0" max="1" step="0.01" value="1" />
+				</label>
+
+				<label class="shader-control" for="effect-multiplier-slider">
+					<span class="shader-control__label">Effect Mult</span>
+					<span class="shader-control__value" id="effect-multiplier-value">1.9x</span>
+					<input id="effect-multiplier-slider" type="range" min="0" max="10" step="0.1" value="1.9" />
+				</label>
+
+				<label class="shader-control" for="audio-threshold-slider">
+					<span class="shader-control__label">Threshold</span>
+					<span class="shader-control__value" id="audio-threshold-value">75%</span>
+					<input id="audio-threshold-slider" type="range" min="0" max="0.95" step="0.01" value="0.75" />
+				</label>
+
+				<details class="gui-section" open>
+					<summary>Field animation</summary>
+
+					<label class="shader-control" for="noise-scale-slider">
+						<span class="shader-control__label">Noise Scale</span>
+						<span class="shader-control__value" id="noise-scale-value">2.40</span>
+						<input id="noise-scale-slider" type="range" min="0.05" max="20" step="0.01" value="2.4" />
+					</label>
+
+					<label class="shader-control" for="path-speed-slider">
+						<span class="shader-control__label">Path Speed</span>
+						<span class="shader-control__value" id="path-speed-value">-0.010</span>
+						<input id="path-speed-slider" type="range" min="-0.3" max="0.3" step="0.005" value="-0.01" />
+					</label>
+
+					<label class="shader-control" for="path-window-slider">
+						<span class="shader-control__label">Curve %</span>
+						<span class="shader-control__value" id="path-window-value">50%</span>
+						<input id="path-window-slider" type="range" min="0.01" max="0.5" step="0.005" value="0.5" />
+					</label>
+
+					<label class="shader-control" for="field-width-slider">
+						<span class="shader-control__label">Field Width</span>
+						<span class="shader-control__value" id="field-width-value">2.85</span>
+						<input id="field-width-slider" type="range" min="0.2" max="4" step="0.05" value="2.85" />
+					</label>
+
+					<label class="shader-control" for="field-offset-slider">
+						<span class="shader-control__label">Path Offset</span>
+						<span class="shader-control__value" id="field-offset-value">32px</span>
+						<input id="field-offset-slider" type="range" min="-160" max="160" step="1" value="32" />
+					</label>
+
+					<label class="shader-control" for="falloff-curve-select">
+						<span class="shader-control__label">Falloff</span>
+						<select id="falloff-curve-select">
+							<option value="smooth">Smooth</option>
+							<option value="soft" selected>Soft Tail</option>
+							<option value="long">Long Tail</option>
+							<option value="hard">Hard Core</option>
+						</select>
+					</label>
+				</details>
+
+				<details class="gui-section" open>
+					<summary>Text animation</summary>
+
+					<label class="shader-control" for="text-speed-slider">
+						<span class="shader-control__label">Text Speed</span>
+						<span class="shader-control__value" id="text-speed-value">-0.010</span>
+						<input id="text-speed-slider" type="range" min="-0.3" max="0.3" step="0.005" value="-0.01" />
+					</label>
+				</details>
+
+				<div class="settings-actions" aria-label="Settings import and export">
+					<button class="settings-button" id="export-settings-btn" type="button">Export settings</button>
+					<label class="settings-button settings-button--file" for="import-settings-input">
+						Import settings
+						<input id="import-settings-input" type="file" accept="application/json,.json" />
+					</label>
+					<p class="settings-status" id="settings-status" aria-live="polite"></p>
+				</div>
+
+				<button class="mute-button" id="toggle-btn" type="button" aria-pressed="false">Mute</button>
+			</div>
+
+			<div class="drop-indicator" aria-hidden="true">Drop MP3 to replace audio</div>
+		</main>
+
+		<div id="p5_loading" class="p5_loading">
+			<div class="p5_loading__inner"></div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.sound.min.js"></script>
+		<script src="js/demo.js"></script>
+	</body>
+</html>
