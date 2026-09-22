@@ -171,6 +171,7 @@ canvas {
 
 .backing-switcher__button,
 .experiment-switcher__button,
+.mic-button,
 .mute-button {
 	min-height: 44px;
 	padding: 0 12px;
@@ -209,6 +210,8 @@ canvas {
 .experiment-switcher__button:focus-visible,
 .backing-switcher__button:hover,
 .backing-switcher__button:focus-visible,
+.mic-button:hover,
+.mic-button:focus-visible,
 .mute-button:hover,
 .mute-button:focus-visible,
 .backing-switcher__button.is-active,
@@ -365,17 +368,32 @@ canvas {
 	font-size: 0.68rem;
 }
 
+.audio-buttons {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.mic-button,
 .mute-button {
 	width: 100%;
 	min-height: 42px;
 	text-align: center;
 	background: transparent;
 	border: 1px solid rgb(255 255 255 / 0.26);
+	touch-action: none;
+	user-select: none;
 }
 
+.mic-button.is-active,
 .mute-button.is-muted {
 	background: #fff;
 	color: #000;
+}
+
+.mic-button.is-error {
+	border-color: #ff6b6b;
+	color: #ffb4b4;
 }
 
 .drop-indicator {

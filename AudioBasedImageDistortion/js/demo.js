@@ -124,6 +124,7 @@ const sketch = (p) => {
 
 	let audio;
 	let fft;
+	let micInput;
 	let foreground;
 	let fallbackForeground;
 	let textLayer;
@@ -138,6 +139,9 @@ const sketch = (p) => {
 	let currentTextColor = backingVersions.purple.textColor;
 	let hasStarted = false;
 	let isMuted = false;
+	let isUsingMic = false;
+	let isStartingMic = false;
+	let wantsMicInput = false;
 	let volumeLevel = 1;
 	let effectMultiplier = 5.0;
 	let audioThreshold = 0.55;
@@ -227,6 +231,7 @@ const sketch = (p) => {
 		gui.backingSwitcher = document.querySelector('#backing-switcher');
 		gui.stageBackground = document.querySelector('#stage-background');
 		gui.toggleBtn = document.querySelector('#toggle-btn');
+		gui.micBtn = document.querySelector('#mic-btn');
 		gui.trackName = document.querySelector('#track-name');
 		gui.volumeSlider = document.querySelector('#volume-slider');
 		gui.volumeValue = document.querySelector('#volume-value');
@@ -337,6 +342,11 @@ const sketch = (p) => {
 
 		gui.exportSettingsBtn.addEventListener('click', exportSettings);
 		gui.importSettingsInput.addEventListener('change', importSettings);
+		gui.micBtn.addEventListener('pointerdown', startMicInput);
+		gui.micBtn.addEventListener('contextmenu', (event) => event.preventDefault());
+		window.addEventListener('pointerup', stopMicInput);
+		window.addEventListener('pointercancel', stopMicInput);
+		window.addEventListener('blur', stopMicInput);
 
 		gui.toggleBtn.addEventListener('click', () => {
 			if (!hasStarted) {
@@ -356,6 +366,105 @@ const sketch = (p) => {
 		hasStarted = true;
 		applyVolume();
 		audio.loop();
+	}
+
+	function startMicInput(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (isUsingMic || isStartingMic) {
+			return;
+		}
+
+		wantsMicInput = true;
+		isStartingMic = true;
+		updateMicButton('starting');
+
+		resumeAudioContext();
+
+		if (!micInput) {
+			micInput = new p5.AudioIn();
+		}
+
+		micInput.start(
+			() => {
+				isStartingMic = false;
+
+				if (!wantsMicInput) {
+					if (micInput) {
+						micInput.stop();
+					}
+
+					fft.setInput(audio);
+					updateMicButton('idle');
+					return;
+				}
+
+				isUsingMic = true;
+				fft.setInput(micInput);
+				updateMicButton('active');
+			},
+			() => {
+				isStartingMic = false;
+				isUsingMic = false;
+				fft.setInput(audio);
+				updateMicButton('error');
+			}
+		);
+	}
+
+	function stopMicInput() {
+		wantsMicInput = false;
+
+		if (!isUsingMic && !isStartingMic) {
+			return;
+		}
+
+		isUsingMic = false;
+		isStartingMic = false;
+
+		if (micInput) {
+			micInput.stop();
+		}
+
+		fft.setInput(audio);
+		updateMicButton('idle');
+	}
+
+	function resumeAudioContext() {
+		const audioContext = typeof getAudioContext === 'function' ? getAudioContext() : null;
+
+		if (audioContext?.state === 'suspended') {
+			audioContext.resume();
+		}
+	}
+
+	function updateMicButton(state = 'idle') {
+		if (!gui.micBtn) {
+			return;
+		}
+
+		gui.micBtn.classList.toggle('is-active', state === 'active' || state === 'starting');
+		gui.micBtn.classList.toggle('is-error', state === 'error');
+		gui.micBtn.setAttribute('aria-pressed', String(state === 'active'));
+
+		if (state === 'starting') {
+			gui.micBtn.textContent = 'Mic…';
+			return;
+		}
+
+		if (state === 'active') {
+			gui.micBtn.textContent = 'Listening';
+			return;
+		}
+
+		if (state === 'error') {
+			gui.micBtn.textContent = 'Mic blocked';
+			window.setTimeout(() => updateMicButton('idle'), 1600);
+			return;
+		}
+
+		gui.micBtn.textContent = 'Hold Mic';
 	}
 
 	function preloadBackingImages() {
@@ -417,7 +526,9 @@ const sketch = (p) => {
 
 				audio = nextAudio;
 				droppedTrackUrl = nextTrackUrl;
-				fft.setInput(audio);
+				if (!isUsingMic && !isStartingMic) {
+					fft.setInput(audio);
+				}
 				setTrackName(file.name);
 				applyVolume();
 
@@ -669,7 +780,7 @@ const sketch = (p) => {
 
 	function getSpectrum() {
 		fft.analyze();
-		const effectAmount = isMuted ? 0 : volumeLevel;
+		const effectAmount = isMuted && !isUsingMic ? 0 : volumeLevel;
 
 		return {
 			bass: fft.getEnergy('bass') * effectAmount,
