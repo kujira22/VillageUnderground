@@ -124,7 +124,8 @@ const sketch = (p) => {
 
 	let audio;
 	let fft;
-	let micInput;
+	let micStream;
+	let micSource;
 	let foreground;
 	let fallbackForeground;
 	let textLayer;
@@ -141,10 +142,10 @@ const sketch = (p) => {
 	let isMuted = false;
 	let isUsingMic = false;
 	let isStartingMic = false;
-	let wantsMicInput = false;
 	let volumeLevel = 1;
 	let effectMultiplier = 5.0;
 	let audioThreshold = 0.55;
+	let micMultiplier = 4;
 	let noiseScale = 2.4;
 	let pathSpeed = -0.01;
 	let pathWindow = 0.5;
@@ -242,6 +243,8 @@ const sketch = (p) => {
 		gui.effectMultiplierValue = document.querySelector('#effect-multiplier-value');
 		gui.audioThresholdSlider = document.querySelector('#audio-threshold-slider');
 		gui.audioThresholdValue = document.querySelector('#audio-threshold-value');
+		gui.micMultiplierSlider = document.querySelector('#mic-multiplier-slider');
+		gui.micMultiplierValue = document.querySelector('#mic-multiplier-value');
 		gui.noiseScaleSlider = document.querySelector('#noise-scale-slider');
 		gui.noiseScaleValue = document.querySelector('#noise-scale-value');
 		gui.pathSpeedSlider = document.querySelector('#path-speed-slider');
@@ -263,7 +266,7 @@ const sketch = (p) => {
 			meterBars[meter.dataset.meter] = meter;
 		});
 
-		document.addEventListener('pointerdown', startAudio, { once: true });
+		document.addEventListener('pointerdown', startAudioFromPage);
 		window.addEventListener('dragenter', handleDragEnter);
 		window.addEventListener('dragover', handleDragOver);
 		window.addEventListener('dragleave', handleDragLeave);
@@ -305,6 +308,11 @@ const sketch = (p) => {
 			updateAudioThresholdValue();
 		});
 
+		gui.micMultiplierSlider.addEventListener('input', () => {
+			micMultiplier = Number(gui.micMultiplierSlider.value);
+			updateMicMultiplierValue();
+		});
+
 		gui.noiseScaleSlider.addEventListener('input', () => {
 			noiseScale = Number(gui.noiseScaleSlider.value);
 			updateNoiseScaleValue();
@@ -342,17 +350,11 @@ const sketch = (p) => {
 
 		gui.exportSettingsBtn.addEventListener('click', exportSettings);
 		gui.importSettingsInput.addEventListener('change', importSettings);
-		gui.micBtn.addEventListener('pointerdown', startMicInput);
+		gui.micBtn.addEventListener('click', toggleMicInput);
 		gui.micBtn.addEventListener('contextmenu', (event) => event.preventDefault());
-		window.addEventListener('pointerup', stopMicInput);
-		window.addEventListener('pointercancel', stopMicInput);
 		window.addEventListener('blur', stopMicInput);
 
 		gui.toggleBtn.addEventListener('click', () => {
-			if (!hasStarted) {
-				startAudio();
-			}
-
 			isMuted = !isMuted;
 			applyVolume();
 		});
@@ -368,54 +370,69 @@ const sketch = (p) => {
 		audio.loop();
 	}
 
-	function startMicInput(event) {
+	function startAudioFromPage(event) {
+		if (hasStarted || event.target.closest('.gui')) {
+			return;
+		}
+
+		startAudio();
+	}
+
+	function toggleMicInput(event) {
 		event.preventDefault();
 		event.stopPropagation();
 
 		if (isUsingMic || isStartingMic) {
+			stopMicInput();
 			return;
 		}
 
-		wantsMicInput = true;
+		startMicInput();
+	}
+
+	async function startMicInput() {
+		if (isUsingMic || isStartingMic) {
+			return;
+		}
+
 		isStartingMic = true;
 		updateMicButton('starting');
 
 		resumeAudioContext();
 
-		if (!micInput) {
-			micInput = new p5.AudioIn();
-		}
+		try {
+			const audioContext = getCurrentAudioContext();
 
-		micInput.start(
-			() => {
-				isStartingMic = false;
-
-				if (!wantsMicInput) {
-					if (micInput) {
-						micInput.stop();
-					}
-
-					fft.setInput(audio);
-					updateMicButton('idle');
-					return;
-				}
-
-				isUsingMic = true;
-				fft.setInput(micInput);
-				updateMicButton('active');
-			},
-			() => {
-				isStartingMic = false;
-				isUsingMic = false;
-				fft.setInput(audio);
-				updateMicButton('error');
+			if (!audioContext || !navigator.mediaDevices?.getUserMedia) {
+				throw new Error('Microphone input is not available');
 			}
-		);
+
+			const stream = await navigator.mediaDevices.getUserMedia({
+				audio: {
+					echoCancellation: false,
+					noiseSuppression: false,
+					autoGainControl: false,
+				},
+				video: false,
+			});
+
+			isStartingMic = false;
+			micStream = stream;
+			micSource = audioContext.createMediaStreamSource(micStream);
+			isUsingMic = true;
+			fft.setInput(micSource);
+			updateMicButton('active');
+		} catch (error) {
+			console.warn('Could not start microphone input:', error);
+			isStartingMic = false;
+			isUsingMic = false;
+			disconnectMicSource();
+			fft.setInput(audio);
+			updateMicButton('error');
+		}
 	}
 
 	function stopMicInput() {
-		wantsMicInput = false;
-
 		if (!isUsingMic && !isStartingMic) {
 			return;
 		}
@@ -423,20 +440,46 @@ const sketch = (p) => {
 		isUsingMic = false;
 		isStartingMic = false;
 
-		if (micInput) {
-			micInput.stop();
-		}
+		disconnectMicSource();
 
 		fft.setInput(audio);
 		updateMicButton('idle');
 	}
 
 	function resumeAudioContext() {
-		const audioContext = typeof getAudioContext === 'function' ? getAudioContext() : null;
+		const audioContext = getCurrentAudioContext();
 
 		if (audioContext?.state === 'suspended') {
 			audioContext.resume();
 		}
+	}
+
+	function getCurrentAudioContext() {
+		if (typeof getAudioContext === 'function') {
+			return getAudioContext();
+		}
+
+		if (typeof p.getAudioContext === 'function') {
+			return p.getAudioContext();
+		}
+
+		return null;
+	}
+
+	function disconnectMicSource() {
+		if (micSource) {
+			micSource.disconnect();
+			micSource = null;
+		}
+
+		if (micStream) {
+			stopMicStream(micStream);
+			micStream = null;
+		}
+	}
+
+	function stopMicStream(stream) {
+		stream.getTracks().forEach((track) => track.stop());
 	}
 
 	function updateMicButton(state = 'idle') {
@@ -464,7 +507,7 @@ const sketch = (p) => {
 			return;
 		}
 
-		gui.micBtn.textContent = 'Hold Mic';
+		gui.micBtn.textContent = 'Mic';
 	}
 
 	function preloadBackingImages() {
@@ -569,6 +612,10 @@ const sketch = (p) => {
 		gui.audioThresholdValue.textContent = `${Math.round(audioThreshold * 100)}%`;
 	}
 
+	function updateMicMultiplierValue() {
+		gui.micMultiplierValue.textContent = `${micMultiplier.toFixed(1)}x`;
+	}
+
 	function updatePathControlValues() {
 		gui.pathSpeedValue.textContent = pathSpeed.toFixed(3);
 		gui.pathWindowValue.textContent = `${Math.round(pathWindow * 100)}%`;
@@ -635,6 +682,7 @@ const sketch = (p) => {
 			muted: isMuted,
 			effectMultiplier,
 			audioThreshold,
+			micMultiplier,
 			noiseScale,
 			pathSpeed,
 			pathWindow,
@@ -664,6 +712,7 @@ const sketch = (p) => {
 		isMuted = Boolean(settings.muted) || volumeLevel === 0;
 		effectMultiplier = clampSetting(settings.effectMultiplier, 0, 10, effectMultiplier);
 		audioThreshold = clampSetting(settings.audioThreshold, 0, 0.95, audioThreshold);
+		micMultiplier = clampSetting(settings.micMultiplier, 1, 30, micMultiplier);
 		noiseScale = clampSetting(settings.noiseScale, 0.05, 20, noiseScale);
 		pathSpeed = clampSetting(settings.pathSpeed, -0.3, 0.3, pathSpeed);
 		pathWindow = clampSetting(settings.pathWindow, 0.01, 0.5, pathWindow);
@@ -682,6 +731,7 @@ const sketch = (p) => {
 		gui.volumeSlider.value = volumeLevel;
 		gui.effectMultiplierSlider.value = effectMultiplier;
 		gui.audioThresholdSlider.value = audioThreshold;
+		gui.micMultiplierSlider.value = micMultiplier;
 		gui.noiseScaleSlider.value = noiseScale;
 		gui.pathSpeedSlider.value = pathSpeed;
 		gui.pathWindowSlider.value = pathWindow;
@@ -694,6 +744,7 @@ const sketch = (p) => {
 		applyVolume();
 		updateEffectMultiplierValue();
 		updateAudioThresholdValue();
+		updateMicMultiplierValue();
 		updateNoiseScaleValue();
 		updatePathControlValues();
 		updateTextControlValues();
@@ -781,12 +832,13 @@ const sketch = (p) => {
 	function getSpectrum() {
 		fft.analyze();
 		const effectAmount = isMuted && !isUsingMic ? 0 : volumeLevel;
+		const inputMultiplier = isUsingMic ? micMultiplier : 1;
 
 		return {
-			bass: fft.getEnergy('bass') * effectAmount,
-			treble: fft.getEnergy('treble') * effectAmount,
-			mid: fft.getEnergy('mid') * effectAmount,
-			highMid: fft.getEnergy('highMid') * effectAmount,
+			bass: Math.min(fft.getEnergy('bass') * effectAmount * inputMultiplier, 255),
+			treble: Math.min(fft.getEnergy('treble') * effectAmount * inputMultiplier, 255),
+			mid: Math.min(fft.getEnergy('mid') * effectAmount * inputMultiplier, 255),
+			highMid: Math.min(fft.getEnergy('highMid') * effectAmount * inputMultiplier, 255),
 		};
 	}
 

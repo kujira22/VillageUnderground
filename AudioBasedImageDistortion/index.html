@@ -102,6 +102,12 @@
 					<input id="audio-threshold-slider" type="range" min="0" max="0.95" step="0.01" value="0.75" />
 				</label>
 
+				<label class="shader-control" for="mic-multiplier-slider">
+					<span class="shader-control__label">Mic Mult</span>
+					<span class="shader-control__value" id="mic-multiplier-value">4.0x</span>
+					<input id="mic-multiplier-slider" type="range" min="1" max="30" step="0.5" value="4" />
+				</label>
+
 				<details class="gui-section" open>
 					<summary>Field animation</summary>
 
@@ -166,7 +172,7 @@
 				</div>
 
 				<div class="audio-buttons" aria-label="Audio controls">
-					<button class="mic-button" id="mic-btn" type="button" aria-pressed="false">Hold Mic</button>
+					<button class="mic-button" id="mic-btn" type="button" aria-pressed="false">Mic</button>
 					<button class="mute-button" id="toggle-btn" type="button" aria-pressed="false">Mute</button>
 				</div>
 			</div>
