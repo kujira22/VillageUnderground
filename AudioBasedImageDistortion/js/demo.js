@@ -2,7 +2,7 @@ const sketch = (p) => {
 	const designWidth = 2000;
 	const designHeight = 1125;
 	const canvasFontFamily = 'GararaCanvas';
-	let spiralText = 'Alewya, Ady Suleiman, Batu, Bushbaby, Channel One Sound System, Conducta, Crawlers, Distruction Boyz, Ella Knight, Faster Horses, Ghostly Kisses, girli, Grace Cummings, Honestav, Jembaa Groove, Kraak & Smaak, Lido Pimienta, MF Robots, MGNA Crrrta, Naomi Scott, Nick Hakim, Pigeon, PlayPiem, Riria, Romare, Skream, Stone Foundation, Thaiboy Digital, TWOFACED, Young Marco';
+	let spiralText = document.querySelector('#spiral-text-input').value;
 	const defaultTrackName = 'TwinPeaks.mp3';
 	const defaultTrackPath = `audio/${defaultTrackName}`;
 	const backingVersions = {
