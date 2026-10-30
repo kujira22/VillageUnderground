@@ -2,7 +2,7 @@ const sketch = (p) => {
 	const designWidth = 2000;
 	const designHeight = 1125;
 	const canvasFontFamily = 'GararaCanvas';
-	const spiralText = 'Alewya, Ady Suleiman, Batu, Bushbaby, Channel One Sound System, Conducta, Crawlers, Distruction Boyz, Ella Knight, Faster Horses, Ghostly Kisses, girli, Grace Cummings, Honestav, Jembaa Groove, Kraak & Smaak, Lido Pimienta, MF Robots, MGNA Crrrta, Naomi Scott, Nick Hakim, Pigeon, PlayPiem, Riria, Romare, Skream, Stone Foundation, Thaiboy Digital, TWOFACED, Young Marco';
+	let spiralText = 'Alewya, Ady Suleiman, Batu, Bushbaby, Channel One Sound System, Conducta, Crawlers, Distruction Boyz, Ella Knight, Faster Horses, Ghostly Kisses, girli, Grace Cummings, Honestav, Jembaa Groove, Kraak & Smaak, Lido Pimienta, MF Robots, MGNA Crrrta, Naomi Scott, Nick Hakim, Pigeon, PlayPiem, Riria, Romare, Skream, Stone Foundation, Thaiboy Digital, TWOFACED, Young Marco';
 	const defaultTrackName = 'TwinPeaks.mp3';
 	const defaultTrackPath = `audio/${defaultTrackName}`;
 	const backingVersions = {
@@ -257,6 +257,8 @@ const sketch = (p) => {
 		gui.fieldOffsetValue = document.querySelector('#field-offset-value');
 		gui.falloffCurveSelect = document.querySelector('#falloff-curve-select');
 		gui.textSpeedSlider = document.querySelector('#text-speed-slider');
+		gui.spiralTextInput = document.querySelector('#spiral-text-input');
+		gui.spiralTextInput.value = spiralText;
 		gui.textSpeedValue = document.querySelector('#text-speed-value');
 		gui.exportSettingsBtn = document.querySelector('#export-settings-btn');
 		gui.importSettingsInput = document.querySelector('#import-settings-input');
@@ -346,6 +348,10 @@ const sketch = (p) => {
 			textSpeed = Number(gui.textSpeedSlider.value);
 			updateTextControlValues();
 			shouldRenderTextTexture = true;
+		});
+
+		gui.spiralTextInput.addEventListener('input', () => {
+			setSpiralText(gui.spiralTextInput.value);
 		});
 
 		gui.exportSettingsBtn.addEventListener('click', exportSettings);
@@ -690,6 +696,7 @@ const sketch = (p) => {
 			fieldOffset,
 			falloffCurve,
 			textSpeed,
+			spiralText,
 		};
 	}
 
@@ -722,6 +729,9 @@ const sketch = (p) => {
 			? settings.falloffCurve
 			: falloffCurve;
 		textSpeed = clampSetting(settings.textSpeed, -0.3, 0.3, textSpeed);
+		if (typeof settings.spiralText === 'string') {
+			setSpiralText(settings.spiralText);
+		}
 		shouldRenderTextTexture = true;
 
 		syncSettingsToGui();
@@ -739,6 +749,7 @@ const sketch = (p) => {
 		gui.fieldOffsetSlider.value = fieldOffset;
 		gui.falloffCurveSelect.value = falloffCurve;
 		gui.textSpeedSlider.value = textSpeed;
+		gui.spiralTextInput.value = spiralText;
 
 		setBackingVersion(activeBackingId);
 		applyVolume();
@@ -1118,11 +1129,15 @@ const sketch = (p) => {
 		};
 	}
 
-	function drawTextOnPath(context, path, center, offsetDistance = 0) {
-		if (textGlyphs.length === 0) {
-			buildTextLayout(context, path);
+	function setSpiralText(value) {
+		spiralText = value.replace(/[\r\n]+/g, ' ');
+		if (textLayer && textPath) {
+			buildTextLayout(textLayer.drawingContext, textPath);
+			shouldRenderTextTexture = true;
 		}
+	}
 
+	function drawTextOnPath(context, path, center, offsetDistance = 0) {
 		context.clearRect(0, 0, designWidth, designHeight);
 		context.fillStyle = currentTextColor;
 		context.font = `${textFontSize}px "${canvasFontFamily}"`;

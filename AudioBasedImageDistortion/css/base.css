@@ -322,6 +322,19 @@ canvas {
 	grid-column: 1 / -1;
 }
 
+.shader-control textarea {
+	grid-column: 1 / -1;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 9px 10px;
+	border: 1px solid rgb(255 255 255 / 0.2);
+	background: rgb(255 255 255 / 0.1);
+	color: #fff;
+	font: inherit;
+	line-height: 1.4;
+	resize: vertical;
+}
+
 .settings-actions {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
