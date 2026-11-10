@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#00aeef">
+  <title>Celebrating Independence — Village Underground</title>
+  <link rel="preload" href="fonts/Garara-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="landing">
+    <section class="poster" aria-label="Village Underground celebrates 20 years of independent culture">
+      <img class="poster__art" id="poster-image" src="com%20Programa.jpg?v=high-res" alt="Celebrating Independence: a poster celebrating 20 years of independent culture, with the artist lineup.">
+      <canvas class="poster__canvas" id="poster-canvas" aria-hidden="true"></canvas>
+      <header class="poster__header">
+        <img class="poster__logo" src="logo.svg" alt="Village Underground">
+      </header>
+      <div class="poster__caption">Celebrating 20 years<br>of independent culture</div>
+      <img class="poster__dice" src="DICE_TicketsOnDICE.svg" alt="Tickets on DICE">
+    </section>
+    <aside class="test-controls" aria-label="Audio distortion test controls">
+      <div class="test-controls__title">Audio distortion test</div>
+      <button type="button" id="play-button">Play audio</button>
+      <label>Audio file <input id="audio-file" type="file" accept="audio/*"></label>
+      <label>Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="0.7"></label>
+      <label>Effect strength <input id="strength" type="range" min="0" max="3" step="0.05" value="1"></label>
+      <label>Threshold <input id="threshold" type="range" min="0" max="0.9" step="0.01" value="0.2"></label>
+      <p id="audio-status" role="status">Press play or choose an audio file.</p>
+    </aside>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>
