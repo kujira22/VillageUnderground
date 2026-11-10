@@ -13,6 +13,20 @@
     <section class="poster" aria-label="Village Underground celebrates 20 years of independent culture">
       <img class="poster__art" id="poster-image" src="com%20Programa.jpg?v=high-res" alt="Celebrating Independence: a poster celebrating 20 years of independent culture, with the artist lineup.">
       <canvas class="poster__canvas" id="poster-canvas" aria-hidden="true"></canvas>
+      <!-- Add hidden to this form to switch the signup off. Paste the Mailchimp form action into data-mailchimp-action when available. -->
+      <form class="signup" id="signup-form" data-mailchimp-action="" method="post">
+        <div class="signup__row">
+          <div class="signup__field" id="signup-field">
+            <svg class="signup__field-shape" aria-hidden="true"><text id="signup-shape-text" x="0" y="0">Your email here</text></svg>
+            <label class="visually-hidden" for="signup-email">Your email address</label>
+            <input id="signup-email" name="EMAIL" type="email" placeholder="Your email here" autocomplete="email" spellcheck="false" required>
+          </div>
+          <button class="signup__button" type="submit" aria-label="Sign up">
+            <svg viewBox="-35 -40 310 185" aria-hidden="true"><text x="120" y="70" text-anchor="middle">Sign up</text></svg>
+          </button>
+        </div>
+        <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
+      </form>
       <header class="poster__header">
         <img class="poster__logo" src="logo.svg" alt="Village Underground">
       </header>
@@ -24,8 +38,8 @@
       <button type="button" id="play-button">Play audio</button>
       <label>Audio file <input id="audio-file" type="file" accept="audio/*"></label>
       <label>Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="1"></label>
-      <label>Effect strength <input id="strength" type="range" min="0" max="3" step="0.05" value="3"></label>
-      <label>Threshold <input id="threshold" type="range" min="0" max="0.9" step="0.01" value="0.4"></label>
+      <label>Effect strength <input id="strength" type="range" min="0" max="3" step="0.05" value="1"></label>
+      <label>Threshold <input id="threshold" type="range" min="0" max="0.9" step="0.01" value="0.78"></label>
       <p id="audio-status" role="status">Press play or choose an audio file.</p>
     </aside>
   </main>

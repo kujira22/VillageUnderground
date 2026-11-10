@@ -1,4 +1,39 @@
 (() => {
+  const signup = document.querySelector('#signup-form');
+  const signupField = document.querySelector('#signup-field');
+  const signupEmail = document.querySelector('#signup-email');
+  const signupShapeText = document.querySelector('#signup-shape-text');
+  const signupStatus = document.querySelector('#signup-status');
+  const textMeasure = document.createElement('canvas').getContext('2d');
+
+  function updateSignupShape() {
+    const style = getComputedStyle(signupEmail);
+    const text = signupEmail.value || signupEmail.placeholder;
+    textMeasure.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const metrics = textMeasure.measureText(text);
+    const fontSize = parseFloat(style.fontSize);
+    const padding = fontSize * 0.7;
+    signupField.style.width = `${Math.ceil(metrics.width + padding * 2 + 3)}px`;
+    signupShapeText.textContent = text;
+    signupShapeText.setAttribute('x', padding - signupEmail.scrollLeft);
+    signupShapeText.setAttribute('y', signupField.clientHeight / 2 + ((metrics.actualBoundingBoxAscent || fontSize * 0.7) - (metrics.actualBoundingBoxDescent || fontSize * 0.2)) / 2);
+  }
+
+  signupEmail.addEventListener('input', () => { signupStatus.textContent = ''; updateSignupShape(); });
+  signupEmail.addEventListener('scroll', updateSignupShape);
+  window.addEventListener('resize', updateSignupShape);
+  document.fonts.ready.then(updateSignupShape);
+  updateSignupShape();
+  signup.addEventListener('submit', (event) => {
+    const action = signup.dataset.mailchimpAction.trim();
+    if (!action) {
+      event.preventDefault();
+      signupStatus.textContent = 'Signup is not connected yet.';
+      return;
+    }
+    signup.action = action;
+  });
+
   const canvas = document.querySelector('#poster-canvas');
   const image = document.querySelector('#poster-image');
   const playButton = document.querySelector('#play-button');
@@ -31,18 +66,26 @@
       precision highp float;
       uniform sampler2D image, displacementMap;
       uniform vec2 resolution;
-      uniform float posterTop, posterHeight, amount;
+      uniform float posterLeft, posterWidth, posterTop, posterHeight, amount;
       void main() {
         vec2 pixel = vec2(gl_FragCoord.x, resolution.y - gl_FragCoord.y);
-        vec2 uv = vec2(pixel.x / resolution.x, (pixel.y - posterTop) / posterHeight);
+        vec2 uv = vec2((pixel.x - posterLeft) / posterWidth, (pixel.y - posterTop) / posterHeight);
         if (uv.y < 0.0 || uv.y > 1.0) discard;
         vec2 mapUV = fract((uv - 0.5) * 2.4 + 0.5);
         vec3 mapColor = texture2D(displacementMap, mapUV).rgb;
         float mapVariation = dot(mapColor, vec3(0.333));
         float edge = smoothstep(0.0, 0.05, uv.x) * smoothstep(0.0, 0.05, 1.0 - uv.x) *
                      smoothstep(0.0, 0.035, uv.y) * smoothstep(0.0, 0.035, 1.0 - uv.y);
-        float displacement = amount * 0.01 * mix(0.55, 1.35, mapVariation);
-        uv.y -= displacement * edge;
+        // Keep the map's local peaks distinct instead of moving the whole poster
+        // outward by a similar amount, which reads as a single bulge.
+        float peaks = smoothstep(0.25, 0.75, mapVariation);
+        peaks *= peaks;
+        float displacement = amount * 0.035 * peaks;
+        vec2 headlineCenter = vec2(0.5, 0.208);
+        float aspect = posterHeight / posterWidth;
+        vec2 fromCenter = (uv - headlineCenter) * vec2(1.0, aspect);
+        vec2 direction = fromCenter / sqrt(dot(fromCenter, fromCenter) + 0.0025);
+        uv -= direction * vec2(1.0, 1.0 / aspect) * displacement * edge;
         gl_FragColor = texture2D(image, clamp(uv, 0.0, 1.0));
       }
     `);
@@ -84,7 +127,7 @@
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, displacementMap);
     gl.uniform1i(gl.getUniformLocation(program, 'displacementMap'), 1);
-    uniforms = Object.fromEntries(['resolution', 'posterTop', 'posterHeight', 'amount'].map(name => [name, gl.getUniformLocation(program, name)]));
+    uniforms = Object.fromEntries(['resolution', 'posterLeft', 'posterWidth', 'posterTop', 'posterHeight', 'amount'].map(name => [name, gl.getUniformLocation(program, name)]));
   }
 
   function draw(time) {
@@ -105,6 +148,8 @@
     const target = Math.max(0, (bass - gate) / (1 - gate)) * Number(strength.value);
     level += (target - level) * (target > level ? 0.3 : 0.1);
     gl.uniform2f(uniforms.resolution, width, height);
+    gl.uniform1f(uniforms.posterLeft, rect.left * ratio);
+    gl.uniform1f(uniforms.posterWidth, rect.width * ratio);
     gl.uniform1f(uniforms.posterTop, rect.top * ratio);
     gl.uniform1f(uniforms.posterHeight, rect.height * ratio);
     gl.uniform1f(uniforms.amount, level);
