@@ -6,25 +6,26 @@
   <meta name="theme-color" content="#00aeef">
   <title>Celebrating Independence — Village Underground</title>
   <link rel="preload" href="fonts/Garara-Medium.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=player-1">
 </head>
 <body>
   <main class="landing">
     <section class="poster" aria-label="Village Underground celebrates 20 years of independent culture">
       <img class="poster__art" id="poster-image" src="com%20Programa.jpg?v=high-res" alt="Celebrating Independence: a poster celebrating 20 years of independent culture, with the artist lineup.">
       <canvas class="poster__canvas" id="poster-canvas" aria-hidden="true"></canvas>
-      <!-- Add hidden to this form to switch the signup off. Paste the Mailchimp form action into data-mailchimp-action when available. -->
-      <form class="signup" id="signup-form" data-mailchimp-action="" method="post">
+      <!-- Add hidden to this form to switch the signup off. -->
+      <form class="signup" id="signup-form" action="https://villageunderground.us6.list-manage.com/subscribe/post?u=6c62c6dc88102dbfb1aaeba06&amp;id=23ecccb6d8&amp;f_id=00c036e3f0" method="post">
         <div class="signup__row">
           <div class="signup__field" id="signup-field">
             <svg class="signup__field-shape" aria-hidden="true"><text id="signup-shape-text" x="0" y="0">Your email here</text></svg>
             <label class="visually-hidden" for="signup-email">Your email address</label>
-            <input id="signup-email" name="EMAIL" type="email" placeholder="Your email here" autocomplete="email" spellcheck="false" required>
+            <input id="signup-email" name="EMAIL" type="email" placeholder="Your email here" autocomplete="off" spellcheck="false" required>
           </div>
-          <button class="signup__button" type="submit" aria-label="Sign up">
+          <button class="signup__button" type="submit" name="subscribe" aria-label="Sign up">
             <svg viewBox="-35 -40 310 185" aria-hidden="true"><text x="120" y="70" text-anchor="middle">Sign up</text></svg>
           </button>
         </div>
+        <div class="signup__honeypot" aria-hidden="true"><input type="text" name="b_6c62c6dc88102dbfb1aaeba06_23ecccb6d8" tabindex="-1" autocomplete="off" value=""></div>
         <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
       </form>
       <header class="poster__header">
@@ -33,6 +34,11 @@
       <div class="poster__caption">Celebrating 20 years<br>of independent culture</div>
       <img class="poster__dice" src="DICE_TicketsOnDICE.svg" alt="Tickets on DICE">
     </section>
+    <div class="audio-player" aria-label="Music player">
+      <span class="audio-player__track" id="player-track" aria-live="polite">Unknown artist — Virginia Plain</span>
+      <button class="audio-player__next" id="player-next" type="button" aria-label="Play the next track">Next</button>
+      <button class="audio-player__next" id="player-mute" type="button" aria-pressed="true">Unmute</button>
+    </div>
     <aside class="test-controls" aria-label="Audio distortion test controls">
       <div class="test-controls__title">Audio distortion test</div>
       <button type="button" id="play-button">Play audio</button>
@@ -43,6 +49,6 @@
       <p id="audio-status" role="status">Press play or choose an audio file.</p>
     </aside>
   </main>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=player-1" defer></script>
 </body>
 </html>
