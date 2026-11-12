@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#00aeef">
+  <title>Celebrate Independence — Village Underground</title>
+  <meta name="description" content="Celebrate 20 years of independent culture at Village Underground. Sign up for news and updates.">
+  <link rel="preload" href="fonts/Garara-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=mobile-2">
+</head>
+<body>
+  <main class="landing">
+    <!-- WORDPRESS MENU: uncomment this placeholder to preview its position,
+         then replace it with the site's CMS-managed menu and its assets.
+    <div class="menu-placeholder" aria-hidden="true"><span></span><span></span><span></span></div>
+    END WORDPRESS MENU -->
+    <section class="poster" aria-label="Village Underground celebrates 20 years of independent culture">
+      <h1 class="visually-hidden">Celebrate Independence</h1>
+      <picture><source media="(max-width: 599px)" srcset="signup_mob.jpg"><img class="poster__art" id="poster-image" src="signup.jpg" alt="Celebrating Independence: Village Underground celebrates 20 years of independent culture."></picture>
+      <canvas class="poster__canvas" id="poster-canvas" aria-hidden="true"></canvas>
+      <!-- Add hidden to this form to switch the signup off. -->
+      <form class="signup" id="signup-form" action="https://villageunderground.us6.list-manage.com/subscribe/post?u=6c62c6dc88102dbfb1aaeba06&amp;id=23ecccb6d8&amp;f_id=00c036e3f0" method="post">
+        <div class="signup__row">
+          <div class="signup__field" id="signup-field">
+            <svg class="signup__field-shape" aria-hidden="true"><text id="signup-shape-text" x="0" y="0">Your email here</text></svg>
+            <label class="visually-hidden" for="signup-email">Your email address</label>
+            <input id="signup-email" name="EMAIL" type="email" placeholder="Your email here" autocomplete="off" spellcheck="false" required>
+          </div>
+          <button class="signup__button" type="submit" name="subscribe" aria-label="Sign up">
+            <svg viewBox="-35 -40 310 185" aria-hidden="true"><text x="120" y="70" text-anchor="middle">Sign up</text></svg>
+          </button>
+        </div>
+        <div class="signup__honeypot" aria-hidden="true"><input type="text" name="b_6c62c6dc88102dbfb1aaeba06_23ecccb6d8" tabindex="-1" autocomplete="off" value=""></div>
+        <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
+      </form>
+      <header class="poster__header">
+        <a href="/" aria-label="Village Underground home"><img class="poster__logo" src="logo.svg" alt="Village Underground"></a>
+      </header>
+      <div class="poster__caption">Celebrating 20 years<br>of independent culture</div>
+      <!-- DICE LINK: add the ticket URL to href when available. -->
+      <a class="poster__dice" href="" aria-label="Tickets on DICE"><img src="DICE_TicketsOnDICE.svg" alt="Tickets on DICE"></a>
+    </section>
+    <!-- AUDIO PLAYER: comment out this whole block to turn off the player and distortion.
+         To change the tracks, edit the playlist near the start of app.js. -->
+    <div class="audio-player" aria-label="Music player" hidden>
+      <span class="audio-player__track" id="player-track" aria-live="polite"></span>
+      <button class="audio-player__next" id="player-next" type="button" aria-label="Play the next track">Next</button>
+      <button class="audio-player__next" id="player-mute" type="button" aria-pressed="true">Unmute</button>
+    </div>
+    <!-- END AUDIO PLAYER -->
+    <aside class="test-controls" aria-label="Audio distortion test controls" hidden>
+      <div class="test-controls__title">Audio distortion test</div>
+      <button type="button" id="play-button">Play audio</button>
+      <label>Audio file <input id="audio-file" type="file" accept="audio/*"></label>
+      <label>Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="1"></label>
+      <label>Effect strength <input id="strength" type="range" min="0" max="3" step="0.05" value="1"></label>
+      <label>Threshold <input id="threshold" type="range" min="0" max="0.9" step="0.01" value="0.78"></label>
+      <p id="audio-status" role="status">Press play or choose an audio file.</p>
+    </aside>
+  </main>
+  <script src="app.js?v=mobile-2" defer></script>
+</body>
+</html>
