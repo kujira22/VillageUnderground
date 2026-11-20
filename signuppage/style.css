@@ -40,6 +40,7 @@ body { background: #825b34; }
 .signup__button.is-complete { margin-left: 0; cursor: default; }
 .signup__status { width: fit-content; max-width: 100%; margin: 8px auto 0; padding: 4px 8px; color: #69480d; background: white; font: 14px/1.3 Arial, sans-serif; }
 .signup__status:empty { display: none; }
+.signup__status a { color: inherit; text-decoration: underline; }
 .signup__permissions { max-width: 640px; max-height: 20svh; overflow-y: auto; margin: 0 auto; padding: 10px 12px; color: #292018; background: rgba(255, 255, 255, .96); font: 13px/1.4 Arial, sans-serif; }
 .signup__permissions[hidden] { display: none; }
 .signup__permissions fieldset { padding: 0; margin: 0; border: 0; }

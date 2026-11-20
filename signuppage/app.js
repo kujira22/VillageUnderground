@@ -37,6 +37,23 @@
     signupButton.style.width = `calc(var(--signup-font-size) * ${viewWidth * 5.4 / 310})`;
   }
 
+  function showCaptchaLink(params) {
+    if (!params || typeof params !== 'object' || Array.isArray(params)) return false;
+    const url = new URL(signup.action);
+    url.search = '';
+    const append = (key, value) => {
+      if (Array.isArray(value)) value.forEach((item) => append(`${key}[]`, item));
+      else if (value && typeof value === 'object') Object.entries(value).forEach(([child, item]) => append(`${key}[${child}]`, item));
+      else if (value != null) url.searchParams.append(key, String(value));
+    };
+    Object.entries(params).forEach(([key, value]) => append(key, value));
+    const link = document.createElement('a');
+    link.href = url.href;
+    link.textContent = 'Complete verification';
+    signupStatus.replaceChildren('Mailchimp needs to verify your signup. ', link, '.');
+    return true;
+  }
+
   signup.addEventListener('submit', (event) => {
     event.preventDefault();
     if (signupButton.disabled) return;
@@ -71,7 +88,11 @@
       } else {
         signupButton.disabled = false;
         setSignupButtonLabel('Sign up');
-        if (typeof result?.msg === 'string' && result.msg.trim()) {
+        if (result?.msg === 'captcha') {
+          if (!showCaptchaLink(result.params)) {
+            signupStatus.textContent = 'Mailchimp requires verification. Please try submitting again.';
+          }
+        } else if (typeof result?.msg === 'string' && result.msg.trim()) {
           const message = new DOMParser().parseFromString(result.msg, 'text/html').body.textContent;
           signupStatus.textContent = message.replace(/^\s*\d+\s*-\s*/, '').trim() || 'Mailchimp could not complete your signup.';
         } else {
