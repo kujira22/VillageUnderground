@@ -7,7 +7,7 @@
   <title>Celebrate Independence — Village Underground</title>
   <meta name="description" content="Celebrate 20 years of independent culture at Village Underground. Sign up for news and updates.">
   <link rel="preload" href="fonts/Garara-Medium.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=consent-1">
+  <link rel="stylesheet" href="style.css?v=consent-2">
 </head>
 <body>
   <main class="landing">
@@ -21,6 +21,7 @@
       <canvas class="poster__canvas" id="poster-canvas" aria-hidden="true"></canvas>
       <!-- Add hidden to this form to switch the signup off. -->
       <form class="signup" id="signup-form" action="https://villageunderground.us1.list-manage.com/subscribe/post?u=b3d13f4a2d2c083f1c90b346e&amp;id=bdf0bb954e&amp;v_id=140&amp;f_id=00102fe1f0" method="post">
+        <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
         <div class="signup__row">
           <div class="signup__field" id="signup-field">
             <svg class="signup__field-shape" aria-hidden="true"><text id="signup-shape-text" x="0" y="0">Your email here</text></svg>
@@ -46,7 +47,6 @@
         </div>
         <input type="hidden" name="tags" value="5627094,439">
         <div class="signup__honeypot" aria-hidden="true"><input type="text" name="b_b3d13f4a2d2c083f1c90b346e_bdf0bb954e" tabindex="-1" autocomplete="off" value=""></div>
-        <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
       </form>
       <header class="poster__header">
         <a href="/" aria-label="Village Underground home"><img class="poster__logo" src="logo.svg" alt="Village Underground"></a>
@@ -73,6 +73,6 @@
       <p id="audio-status" role="status">Press play or choose an audio file.</p>
     </aside>
   </main>
-  <script src="app.js?v=consent-1" defer></script>
+  <script src="app.js?v=consent-2" defer></script>
 </body>
 </html>

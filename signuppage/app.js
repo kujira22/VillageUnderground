@@ -71,7 +71,12 @@
       } else {
         signupButton.disabled = false;
         setSignupButtonLabel('Sign up');
-        signupStatus.textContent = 'Sorry, we couldn’t complete your signup. Please try again.';
+        if (typeof result?.msg === 'string' && result.msg.trim()) {
+          const message = new DOMParser().parseFromString(result.msg, 'text/html').body.textContent;
+          signupStatus.textContent = message.replace(/^\s*\d+\s*-\s*/, '').trim() || 'Mailchimp could not complete your signup.';
+        } else {
+          signupStatus.textContent = 'We could not confirm your signup. Please check with us before trying again.';
+        }
       }
     };
     window[callback] = finish;
