@@ -4,6 +4,7 @@
   const signupEmail = document.querySelector('#signup-email');
   const signupShapeText = document.querySelector('#signup-shape-text');
   const signupStatus = document.querySelector('#signup-status');
+  const signupPermissions = document.querySelector('#signup-permissions');
   const signupButton = signup.querySelector('button[type="submit"]');
   const signupButtonSvg = signupButton.querySelector('svg');
   const signupButtonText = signupButtonSvg.querySelector('text');
@@ -39,6 +40,11 @@
   signup.addEventListener('submit', (event) => {
     event.preventDefault();
     if (signupButton.disabled) return;
+    if (!signupPermissions.querySelector('input[type="checkbox"]:checked')) {
+      signupStatus.textContent = 'Please select at least one marketing permission.';
+      signupPermissions.querySelector('input[type="checkbox"]').focus();
+      return;
+    }
 
     const url = new URL(signup.action);
     url.pathname = url.pathname.replace(/\/post\/?$/, '/post-json');
@@ -56,6 +62,7 @@
       delete window[callback];
       if (result && result.result === 'success') {
         signupField.hidden = true;
+        signupPermissions.hidden = true;
         signupButton.classList.add('is-complete');
         setSignupButtonLabel('Thank you!');
         signupStatus.textContent = /confirm|check your email/i.test(result.msg || '')

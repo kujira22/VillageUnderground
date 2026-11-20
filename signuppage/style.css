@@ -40,6 +40,15 @@ body { background: #825b34; }
 .signup__button.is-complete { margin-left: 0; cursor: default; }
 .signup__status { width: fit-content; max-width: 100%; margin: 8px auto 0; padding: 4px 8px; color: #69480d; background: white; font: 14px/1.3 Arial, sans-serif; }
 .signup__status:empty { display: none; }
+.signup__permissions { max-width: 640px; max-height: 20svh; overflow-y: auto; margin: 0 auto; padding: 10px 12px; color: #292018; background: rgba(255, 255, 255, .96); font: 13px/1.4 Arial, sans-serif; }
+.signup__permissions[hidden] { display: none; }
+.signup__permissions fieldset { padding: 0; margin: 0; border: 0; }
+.signup__permissions legend { font-weight: 700; }
+.signup__permissions p { margin: 6px 0; }
+.signup__permissions a { color: inherit; }
+.signup__permission-options { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.signup__permission-options label { display: inline-flex; align-items: center; gap: 5px; }
+.signup__permission-options input { width: 18px; height: 18px; margin: 0; accent-color: #825b34; }
 .signup__honeypot { position: absolute; left: -5000px; }
 .menu-placeholder { position: fixed; z-index: 4; top: clamp(16px, 2.5vw, 34px); right: clamp(16px, 2.5vw, 34px); width: 32px; height: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; pointer-events: none; }
 .menu-placeholder span { display: block; width: 24px; height: 3px; background: white; }
@@ -70,5 +79,6 @@ body { background: #825b34; }
   .signup__field { flex: none; z-index: 2; }
   .signup__field input { z-index: 2; pointer-events: auto; touch-action: manipulation; }
   .signup__button { position: relative; z-index: 1; margin: calc(var(--signup-font-size) * -.45) 0 0; }
+  .signup__permissions { max-height: none; }
   .poster__dice { position: relative; display: block; top: auto; right: auto; bottom: auto; width: 31%; max-width: 160px; margin: 12vw auto 4vw; }
 }
