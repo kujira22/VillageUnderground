@@ -119,10 +119,9 @@
   if (!player || mobileView.matches) return;
   // Add, remove or reorder tracks here; filenames refer to files in the audio folder.
   const playlist = [
-    { src: 'audio/01VirginiaPlain (1).mp3', artist: 'Unknown artist', title: 'Virginia Plain' },
-    { src: 'audio/02 Bet She Looks Like you.mp3', artist: 'Nick Hakim', title: 'Bet She Looks Like You' },
-    { src: 'audio/Going Up.mp3', artist: 'Unknown artist', title: 'Going Up' },
-    { src: 'audio/TwinPeaks.mp3', artist: 'Unknown artist', title: 'Twin Peaks' },
+    { src: 'audio/VU20-Pigeon-Miami.mp3', artist: 'Pigeon', title: 'Miami' },
+    { src: 'audio/VU20-Sampa-The-Great_Mwanje-Cant-Hold-Us.mp3', artist: 'Sampa the Great ft. Mwanje', title: 'Can\'t Hold Us' },
+    { src: 'audio/VU20-Yard-Loup.mp3', artist: 'Yard Loup', title: 'Craven Faults' },
   ];
   if (!playlist.length) return;
   player.hidden = false;

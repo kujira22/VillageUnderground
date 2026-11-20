@@ -83,3 +83,31 @@ body { background: #825b34; }
   .signup__permissions { max-height: none; }
   .poster__dice { position: relative; display: block; top: auto; right: auto; bottom: auto; width: 31%; max-width: 160px; margin: 12vw auto 4vw; }
 }
+
+/* PB additions */
+
+.poster__caption {
+    background-image: url(VU20_White_02.webp);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+@media (max-width: 599px) {
+    .poster__caption {
+        top: 168vw;
+
+     background-size: 21vw auto;
+     padding-block-start: 28vw;
+    padding-inline: min(30px, 2vw);
+  background-position: center top;
+  }
+}
+
+@media (min-width: 600px) {
+.poster__caption {
+    padding-inline-start: min(100px, 8vw);
+    padding-block: min(30px, 2vw);
+
+    background-position: left center;
+}
+}
