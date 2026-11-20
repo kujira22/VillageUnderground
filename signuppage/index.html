@@ -7,7 +7,7 @@
   <title>Celebrate Independence — Village Underground</title>
   <meta name="description" content="Celebrate 20 years of independent culture at Village Underground. Sign up for news and updates.">
   <link rel="preload" href="fonts/Garara-Medium.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=v2-consent-1">
+  <link rel="stylesheet" href="style.css?v=v2-consent-2">
 </head>
 <body>
   <main class="landing">
@@ -22,13 +22,13 @@
       <!-- Add hidden to this form to switch the signup off. -->
 
       <form class="signup" id="signup-form" action="https://villageunderground.us1.list-manage.com/subscribe/post?u=b3d13f4a2d2c083f1c90b346e&amp;id=bdf0bb954e&amp;v_id=140&amp;f_id=00102fe1f0" method="post">
-        <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
         <div class="signup__row">
 
           <div class="signup__field" id="signup-field">
             <svg class="signup__field-shape" aria-hidden="true"><text id="signup-shape-text" x="0" y="0">Your email here</text></svg>
             <label class="visually-hidden" for="signup-email">Your email address</label>
             <input id="signup-email" name="EMAIL" type="email" placeholder="Your email here" autocomplete="off" spellcheck="false" required>
+            <span class="signup__verification" id="signup-verification" role="status" hidden><span>verify your signup</span> <a id="signup-verification-link">complete</a></span>
           </div>
 
           <button class="signup__button" type="submit" name="subscribe" aria-label="Sign up">
@@ -36,18 +36,16 @@
           </button>
 
         </div>
-        <div class="signup__permissions" id="signup-permissions">
-          <fieldset>
-            <legend>Marketing Permissions</legend>
-            <p>Village Underground will use the information you provide on this form to be in touch with you and to provide updates and marketing. Please let us know all the ways you would like to hear from us:</p>
-            <div class="signup__permission-options">
-              <label><input type="checkbox" name="gdpr[1]" value="Y"> Email</label>
-              <label><input type="checkbox" name="gdpr[5]" value="Y"> Direct Mail</label>
-              <label><input type="checkbox" name="gdpr[9]" value="Y"> Customized online advertising</label>
-            </div>
-          </fieldset>
-          <p>You can change your mind at any time by clicking the unsubscribe link in the footer of any email you receive from us, or by contacting us at <a href="mailto:comps@villageunderground.co.uk">comps@villageunderground.co.uk</a>. We will treat your information with respect and we will only ever send you relevant information. For more information about our privacy practices please visit our website. By clicking below, you agree that we may process your information in accordance with these terms.</p>
-          <p>We use Mailchimp as our marketing platform. By clicking below to subscribe, you acknowledge that your information will be transferred to Mailchimp for processing. <a href="https://mailchimp.com/legal/terms">Learn more</a> about Mailchimp's privacy practices.</p>
+        <div class="signup__feedback">
+          <div class="signup__permissions" id="signup-permissions">
+            <fieldset>
+              <legend class="visually-hidden">Marketing permissions</legend>
+              <div class="signup__permission-options">
+                <p>Village Underground will use the information you provide on this form to be in touch with you and to provide updates and marketing via email. <label><span>I agree</span><input type="checkbox" name="gdpr[1]" value="Y"></label></p>
+              </div>
+            </fieldset>
+          </div>
+          <p class="signup__status" id="signup-status" role="status" aria-live="polite"></p>
         </div>
         <input type="hidden" name="tags" value="5627094,439">
         <div class="signup__honeypot" aria-hidden="true"><input type="text" name="b_b3d13f4a2d2c083f1c90b346e_bdf0bb954e" tabindex="-1" autocomplete="off" value=""></div>
@@ -84,6 +82,6 @@
     </aside>
 
   </main>
-  <script src="app.js?v=v2-consent-1" defer></script>
+  <script src="app.js?v=v2-consent-2" defer></script>
 </body>
 </html>

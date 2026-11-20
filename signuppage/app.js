@@ -5,12 +5,16 @@
   const signupShapeText = document.querySelector('#signup-shape-text');
   const signupStatus = document.querySelector('#signup-status');
   const signupPermissions = document.querySelector('#signup-permissions');
+  const signupVerification = document.querySelector('#signup-verification');
+  const signupVerificationLink = document.querySelector('#signup-verification-link');
+  let verificationUrl = null;
   const signupButton = signup.querySelector('button[type="submit"]');
   const signupButtonSvg = signupButton.querySelector('svg');
   const signupButtonText = signupButtonSvg.querySelector('text');
   const textMeasure = document.createElement('canvas').getContext('2d');
 
   function updateSignupShape() {
+    if (verificationUrl) { renderVerification(); return; }
     const style = getComputedStyle(signupEmail);
     const text = signupEmail.value || signupEmail.placeholder;
     textMeasure.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
@@ -37,7 +41,21 @@
     signupButton.style.width = `calc(var(--signup-font-size) * ${viewWidth * 5.4 / 310})`;
   }
 
-  function showCaptchaLink(params) {
+  function renderVerification() {
+    const style = getComputedStyle(signupEmail);
+    const fontSize = parseFloat(style.fontSize) * 0.85;
+    textMeasure.font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
+    const metrics = textMeasure.measureText(signupVerification.textContent);
+    const padding = fontSize * 0.7;
+    signupField.style.width = `${Math.ceil(metrics.width + padding * 2 + 3)}px`;
+    signupField.style.setProperty('--verification-size', `${fontSize}px`);
+    signupShapeText.style.fontSize = `${fontSize}px`;
+    signupShapeText.textContent = signupVerification.textContent;
+    signupShapeText.setAttribute('x', padding);
+    signupShapeText.setAttribute('y', signupField.clientHeight / 2 + ((metrics.actualBoundingBoxAscent || fontSize * 0.7) - (metrics.actualBoundingBoxDescent || fontSize * 0.2)) / 2);
+  }
+
+  function showCaptchaStep(params) {
     if (!params || typeof params !== 'object' || Array.isArray(params)) return false;
     const url = new URL(signup.action);
     url.search = '';
@@ -47,10 +65,16 @@
       else if (value != null) url.searchParams.append(key, String(value));
     };
     Object.entries(params).forEach(([key, value]) => append(key, value));
-    const link = document.createElement('a');
-    link.href = url.href;
-    link.textContent = 'Complete verification';
-    signupStatus.replaceChildren('Mailchimp needs to verify your signup. ', link, '.');
+    verificationUrl = url.href;
+    signup.classList.add('is-verification');
+    signupEmail.hidden = true;
+    signupVerification.hidden = false;
+    signupVerificationLink.href = verificationUrl;
+    signupPermissions.hidden = true;
+    signupButton.hidden = true;
+    signupStatus.textContent = '';
+    renderVerification();
+    requestAnimationFrame(renderVerification);
     return true;
   }
 
@@ -58,7 +82,7 @@
     event.preventDefault();
     if (signupButton.disabled) return;
     if (!signupPermissions.querySelector('input[type="checkbox"]:checked')) {
-      signupStatus.textContent = 'Please select at least one marketing permission.';
+      signupStatus.textContent = 'Please agree to receive updates by email.';
       signupPermissions.querySelector('input[type="checkbox"]').focus();
       return;
     }
@@ -89,7 +113,7 @@
         signupButton.disabled = false;
         setSignupButtonLabel('Sign up');
         if (result?.msg === 'captcha') {
-          if (!showCaptchaLink(result.params)) {
+          if (!showCaptchaStep(result.params)) {
             signupStatus.textContent = 'Mailchimp requires verification. Please try submitting again.';
           }
         } else if (typeof result?.msg === 'string' && result.msg.trim()) {
