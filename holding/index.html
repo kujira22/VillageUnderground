@@ -7,7 +7,7 @@
   <title>Celebrate Independence — Village Underground</title>
   <meta name="description" content="Celebrate 20 years of independent culture at Village Underground. Sign up for news and updates.">
   <link rel="preload" href="fonts/Garara-Medium.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=holding-scroll-2">
+  <link rel="stylesheet" href="style.css?v=holding-scroll-3">
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -23,7 +23,7 @@
     END WORDPRESS MENU -->
     <section class="poster" aria-label="Village Underground celebrates 20 years of independent culture">
       <h1 class="visually-hidden">Celebrate Independence</h1>
-      <img class="poster__art" id="poster-image" src="desktop_bg2.jpg" alt="Celebrate Independence: Acid Arab, Ceebo, Channel One Sound, Client_AC, Craven Faults, Dorisburg, Dry Cleaning, Emma Jean-Thackray, Fumiya Tanaka, Knats, Pigeon, RIP Magic, Sam Goku, Sampa The Great, Stella Z, Squid, Yasmin Hamdan and Yu Su.">
+      <picture><source media="(max-width: 599px)" srcset="mobile_bg.jpg"><img class="poster__art" id="poster-image" src="desktop_bg3.jpg" alt="20 Hour Party: Acid Arab, Brick Lane Jazz Festival, Bridge &amp; Friends, Ceebo, Channel One Sound System, Client Communications, Craven Faults, Dorisburg (Live), Dry Cleaning, Fumiya-Tanaka, Hannah Diamond, Huck Magazine, Katy B's Little Red Rave, 10 Years of Keep Hush, Knats, Pigeon, RIP Magic, Saint Ludo, Sam Goku, Sampa The Great, Scientist, Sixtion, Stella Z, Yasmine Hamdan, Yu Su and more to be announced."></picture>
       <canvas class="poster__canvas" id="poster-canvas" aria-hidden="true"></canvas>
       <img class="poster__anniversary" src="VU20.png" alt="Village Underground 20">
       <!-- Add hidden to this form to switch the signup off. -->
@@ -86,12 +86,12 @@
       <button type="button" id="play-button">Play audio</button>
       <label>Audio file <input id="audio-file" type="file" accept="audio/*"></label>
       <label>Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="1"></label>
-      <label>Effect strength <input id="strength" type="range" min="0" max="3" step="0.05" value="1"></label>
-      <label>Threshold <input id="threshold" type="range" min="0" max="0.9" step="0.01" value="0.78"></label>
+      <label>Effect strength <input id="strength" type="range" min="0" max="3" step="0.05" value="2"></label>
+      <label>Threshold <input id="threshold" type="range" min="0" max="0.9" step="0.01" value="0.9"></label>
       <p id="audio-status" role="status">Press play or choose an audio file.</p>
     </aside>
 
   </main>
-  <script src="app.js?v=v2-consent-2" defer></script>
+  <script src="app.js?v=holding-scroll-3" defer></script>
 </body>
 </html>

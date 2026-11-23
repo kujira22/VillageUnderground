@@ -3,6 +3,7 @@
   const signupField = document.querySelector('#signup-field');
   const signupEmail = document.querySelector('#signup-email');
   const signupShapeText = document.querySelector('#signup-shape-text');
+  const signupShape = signupShapeText.ownerSVGElement;
   const signupStatus = document.querySelector('#signup-status');
   const signupPermissions = document.querySelector('#signup-permissions');
   const signupVerification = document.querySelector('#signup-verification');
@@ -23,8 +24,10 @@
     const padding = fontSize * 0.7;
     signupField.style.width = `${Math.ceil(metrics.width + padding * 2 + 3)}px`;
     signupShapeText.textContent = text;
-    signupShapeText.setAttribute('x', padding - signupEmail.scrollLeft);
-    signupShapeText.setAttribute('y', signupField.clientHeight / 2 + ((metrics.actualBoundingBoxAscent || fontSize * 0.7) - (metrics.actualBoundingBoxDescent || fontSize * 0.2)) / 2);
+    const fieldRect = signupField.getBoundingClientRect();
+    const shapeRect = signupShape.getBoundingClientRect();
+    signupShapeText.setAttribute('x', fieldRect.left - shapeRect.left + padding - signupEmail.scrollLeft);
+    signupShapeText.setAttribute('y', fieldRect.top - shapeRect.top + signupField.clientHeight / 2 + ((metrics.actualBoundingBoxAscent || fontSize * 0.7) - (metrics.actualBoundingBoxDescent || fontSize * 0.2)) / 2);
   }
 
   signupEmail.addEventListener('input', () => { signupStatus.textContent = ''; updateSignupShape(); });
@@ -51,8 +54,10 @@
     signupField.style.setProperty('--verification-size', `${fontSize}px`);
     signupShapeText.style.fontSize = `${fontSize}px`;
     signupShapeText.textContent = signupVerification.textContent;
-    signupShapeText.setAttribute('x', padding);
-    signupShapeText.setAttribute('y', signupField.clientHeight / 2 + ((metrics.actualBoundingBoxAscent || fontSize * 0.7) - (metrics.actualBoundingBoxDescent || fontSize * 0.2)) / 2);
+    const fieldRect = signupField.getBoundingClientRect();
+    const shapeRect = signupShape.getBoundingClientRect();
+    signupShapeText.setAttribute('x', fieldRect.left - shapeRect.left + padding);
+    signupShapeText.setAttribute('y', fieldRect.top - shapeRect.top + signupField.clientHeight / 2 + ((metrics.actualBoundingBoxAscent || fontSize * 0.7) - (metrics.actualBoundingBoxDescent || fontSize * 0.2)) / 2);
   }
 
   function showCaptchaStep(params) {
@@ -173,7 +178,7 @@
   audio.loop = false;
   audio.muted = true;
   audio.volume = Number(volume.value);
-  let context, analyser, outputGain, bins, objectUrl, raf, gl, program, uniforms, posterTextureHandle;
+  let context, analyser, outputGain, bins, objectUrl, raf, gl, program, uniforms, posterTextureHandle, maxViewport;
   let level = 0;
   let pointer = null;
   window.addEventListener('mousemove', event => { pointer = { x: event.clientX, y: event.clientY }; });
@@ -191,6 +196,7 @@
   function initWebGL() {
     gl = canvas.getContext('webgl', { alpha: true, antialias: false });
     if (!gl) throw new Error('WebGL is unavailable');
+    maxViewport = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
     const vertex = shader(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){gl_Position=vec4(p,0.,1.);}');
     const fragment = shader(gl.FRAGMENT_SHADER, `
       precision highp float;
@@ -270,13 +276,13 @@
 
   function draw(time) {
     if (mobileView.matches) return;
-    const ratio = devicePixelRatio || 1;
-    const width = Math.round(innerWidth * ratio), height = Math.round(innerHeight * ratio);
+    const rect = image.getBoundingClientRect();
+    const ratio = Math.min(devicePixelRatio || 1, maxViewport[0] / rect.width, maxViewport[1] / rect.height, 4096 / Math.max(rect.width, rect.height));
+    const width = Math.max(1, Math.round(rect.width * ratio)), height = Math.max(1, Math.round(rect.height * ratio));
     if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
     gl.viewport(0, 0, width, height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    const rect = image.getBoundingClientRect();
     let target;
     if (analyser && context.state === 'running' && !audio.paused) {
       analyser.getByteFrequencyData(bins);
@@ -306,10 +312,10 @@
     gl.uniform2f(uniforms.resolution, width, height);
     gl.uniform2f(uniforms.effectCenter, pointer ? (pointer.x - rect.left) / rect.width : 0.5, pointer ? (pointer.y - rect.top) / rect.height : 0.72);
     gl.uniform1f(uniforms.effectRadius, Math.min(innerWidth, innerHeight) * 0.9 / rect.width);
-    gl.uniform1f(uniforms.posterLeft, rect.left * ratio);
-    gl.uniform1f(uniforms.posterWidth, rect.width * ratio);
-    gl.uniform1f(uniforms.posterTop, rect.top * ratio);
-    gl.uniform1f(uniforms.posterHeight, rect.height * ratio);
+    gl.uniform1f(uniforms.posterLeft, 0);
+    gl.uniform1f(uniforms.posterWidth, width);
+    gl.uniform1f(uniforms.posterTop, 0);
+    gl.uniform1f(uniforms.posterHeight, height);
     gl.uniform1f(uniforms.amount, level);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     raf = requestAnimationFrame(draw);
